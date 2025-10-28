@@ -1,0 +1,3 @@
+[submodule "LLoPkgs/Maid"]
+	path = LLoPkgs/Maid
+	url = https://github.com/asmole/Maid
