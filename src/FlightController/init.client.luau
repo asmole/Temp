@@ -96,7 +96,7 @@ local function get_vectordirection() -- Check if control keys are already held d
 	return direction
 end
 
-local function is_colliding(character, move_direction)
+local function is_colliding(character, move_direction) -- Check whether there is an object ahead in the direction the player is moving
 	local root_part = character.PrimaryPart
 
 	local size = root_part.Size
@@ -109,7 +109,7 @@ local function is_colliding(character, move_direction)
 	local ceil = math.ceil
 
 	local face_size1, face_size2
-	if abs(move_direction:Dot(look_vector)) > 0.9 then -- Check if the character is facing close enough to a specific direction
+	if abs(move_direction:Dot(look_vector)) > 0.9 then -- Check if the character (model) is facing close enough to a specific direction
 		face_size1, face_size2 = size.Y, size.X -- The front or back face
 	elseif abs(move_direction:Dot(up_vector)) > 0.9 then
 		face_size1, face_size2 = size.X, size.Z -- The top or bottom face
@@ -129,6 +129,7 @@ local function is_colliding(character, move_direction)
 	local center_origin = root_part.Position + (move_direction * (size.Z / 2))
 	local direction = (move_direction * RAYCAST_DISTANCE)
 
+	-- Shoot a grid of raycasts from the nearest face
 	for i = 0, rays_count1, 1 do
 		for j = 0, rays_count2, 1 do
 			local offset1 = (i - rays_count1 / 2) * RAYCAST_SPACING * right_vector
@@ -168,6 +169,7 @@ function FlightController:_addMovers()
 	self._Maid:GiveTask(attachment)
 end
 
+-- Loop that updates mover properties
 function FlightController:_initFrameUpdate()
 	local function step(delta_time)
 		local speed = self.Speed
@@ -308,8 +310,21 @@ function FlightController:Destroy()
 	self._Maid:Destroy()
 end
 
+-- Demo
 local speed = 32
-local fly_animations = {}
+local fly_animations = {
+	Forward = script.Animations.Front,
+	Backward = script.Animations.Back,
+
+	LeftStrafing = script.Animations.Left,
+	RightStrafing = script.Animations.Right,
+
+	LeftDiagonalForward = script.Animations.LeftFront,
+	RightDiagonalForward = script.Animations.RightFront,
+
+	LeftDiagonalBackward = script.Animations.LeftBack,
+	RightDiagonalBackward = script.Animations.RightBack,
+}
 
 local curr_controller
 ContextActionService:BindAction("__test__", function(_, input_state: Enum.UserInputState)

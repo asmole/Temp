@@ -3,6 +3,12 @@
   "tree": {
     "$className": "DataModel",
 
+    "ReplicatedStorage": {
+      "LLoPkgs": {
+        "$path": "LLoPkgs"
+      }
+    },
+
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "$path": "src/"
