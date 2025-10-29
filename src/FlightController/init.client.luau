@@ -25,13 +25,10 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts")
 
-local PlayerModule = require(PlayerScripts.PlayerModule) :: ModuleScript
+local PlayerModule = require(PlayerScripts:WaitForChild("PlayerModule")) :: ModuleScript
 local RobloxControls = PlayerModule:GetControls()
 
-local Shared = ReplicatedStorage:WaitForChild("Shared")
-local LLoPackages = Shared.LLoPackages
-
-local Maid = require(LLoPackages.Maid) -- Maid was developed by me, but the functionality is virtually the same
+local Maid = require(ReplicatedStorage.LLoPkgs.Maid.Maid) -- Maid was developed by me, but the functionality is virtually the same
 
 local CurrentCamera = workspace.CurrentCamera
 
@@ -274,7 +271,7 @@ function FlightController:_init()
 	self:_addMovers()
 	self:_updateAnimation()
 
-	self._humanoid.PlatformStand = true -- Disable ragdoll and other stuff
+	self._humanoid.PlatformStand = true -- Disable some humanoid functionality
 	RobloxControls:Disable() -- Disable roblox character movement
 
 	local function on_destroy()
@@ -310,3 +307,20 @@ end
 function FlightController:Destroy()
 	self._Maid:Destroy()
 end
+
+local speed = 32
+local fly_animations = {}
+
+local curr_controller
+ContextActionService:BindAction("__test__", function(_, input_state: Enum.UserInputState)
+	local uis = Enum.UserInputState
+
+	if input_state == uis.Begin then
+		if not curr_controller then
+			curr_controller = FlightController.new(speed, fly_animations)
+		end
+	elseif input_state == uis.End or input_state == uis.Cancel then
+		curr_controller:Destroy()
+		curr_controller = nil
+	end
+end, false, Enum.UserInputType.MouseButton1)
