@@ -1,0 +1,14 @@
+{
+    "comment": "AlignOrientation couldn't be properly synced.",
+    
+    "className": "AlignOrientation",
+    "properties": {
+        "Mode": {
+            "Enum": 0
+        },
+
+        "MaxAngularVelocity": 10000000.0,
+        "MaxTorque": 10000000.0,
+        "Responsiveness": 30.0
+    }
+}
