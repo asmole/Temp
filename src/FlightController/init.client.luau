@@ -311,7 +311,7 @@ function FlightController:Destroy()
 end
 
 -- Demo
-local speed = 32
+local speed = 64
 local fly_animations = {
 	Forward = script.Animations.Front,
 	Backward = script.Animations.Back,

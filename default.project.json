@@ -11,7 +11,9 @@
 
     "StarterPlayer": {
       "StarterPlayerScripts": {
-        "$path": "src/"
+        "$path": "src/",
+
+        "$ignoreUnknownInstances": true
       }
     },
 
