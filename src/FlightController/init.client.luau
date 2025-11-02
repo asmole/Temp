@@ -28,7 +28,8 @@ local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts") -- Reference to 
 local PlayerModule = require(PlayerScripts:WaitForChild("PlayerModule")) :: ModuleScript -- Reference to official roblox system for character and user controls
 local RobloxControls = PlayerModule:GetControls() -- Reference to official roblox controls system
 
-local Maid = require(ReplicatedStorage.LLoPkgs.Maid.Maid) -- Maid was developed by me, but the functionality is virtually the same
+-- (The package is a submodule linked to a private repository, if this is an issue and you want to see the source just ask)
+local Maid = require(ReplicatedStorage.LLoPkgs.Maid.Maid) -- Reference to a Maid package, it was developed by me, but the functionality is virtually the same
 
 local CurrentCamera = workspace.CurrentCamera -- A reference to the player's camera, it is crucial for proper movement
 
@@ -259,92 +260,92 @@ function FlightController:_bindActions() -- Add a private method, that binds mov
 		end
 	end
 
-	ContextActionService:BindAction(ACTION_KEYS.W, closure(Vector3.new(0, 0, 1)), false, KeyCode.W)
-	ContextActionService:BindAction(ACTION_KEYS.A, closure(Vector3.new(-1, 0, 0)), false, KeyCode.A)
-	ContextActionService:BindAction(ACTION_KEYS.S, closure(Vector3.new(0, 0, -1)), false, KeyCode.S)
-	ContextActionService:BindAction(ACTION_KEYS.D, closure(Vector3.new(1, 0, 0)), false, KeyCode.D)
+	ContextActionService:BindAction(ACTION_KEYS.W, closure(Vector3.new(0, 0, 1)), false, KeyCode.W) -- Bind Keycode.W to Vector3 direction [0, 0, 1]
+	ContextActionService:BindAction(ACTION_KEYS.A, closure(Vector3.new(-1, 0, 0)), false, KeyCode.A) -- Bind Keycode.A to Vector3 direction [-1, 0, 0]
+	ContextActionService:BindAction(ACTION_KEYS.S, closure(Vector3.new(0, 0, -1)), false, KeyCode.S) -- Bind Keycode.S to Vector3 direction [0, 0, -1]
+	ContextActionService:BindAction(ACTION_KEYS.D, closure(Vector3.new(1, 0, 0)), false, KeyCode.D) -- Bind Keycode.D to Vector3 direction [1, 0, 0]
 
-	ContextActionService:BindAction(ACTION_KEYS.SPACE, closure(Vector3.new(0, 1, 0)), false, KeyCode.Space)
-	ContextActionService:BindAction(ACTION_KEYS.LSHIFT, closure(Vector3.new(0, -1, 0)), false, KeyCode.LeftShift)
+	ContextActionService:BindAction(ACTION_KEYS.SPACE, closure(Vector3.new(0, 1, 0)), false, KeyCode.Space) -- Bind Keycode.Space to Vector3 direction [0, 1, 0]
+	ContextActionService:BindAction(ACTION_KEYS.LSHIFT, closure(Vector3.new(0, -1, 0)), false, KeyCode.LeftShift) -- Bind Keycode.leftShift to Vector3 direction [0, -1, 0]
 end
-function FlightController:_unbindActions()
-	ContextActionService:UnbindAction(ACTION_KEYS.W)
-	ContextActionService:UnbindAction(ACTION_KEYS.A)
-	ContextActionService:UnbindAction(ACTION_KEYS.S)
-	ContextActionService:UnbindAction(ACTION_KEYS.D)
+function FlightController:_unbindActions() -- Add a private method, that unbinds movement keys from ContextActionService actions
+	ContextActionService:UnbindAction(ACTION_KEYS.W) -- Unbinds ACTION_KEYS.W from Keycode.W
+	ContextActionService:UnbindAction(ACTION_KEYS.A) -- Unbinds ACTION_KEYS.A from Keycode.A
+	ContextActionService:UnbindAction(ACTION_KEYS.S) -- Unbinds ACTION_KEYS.S from Keycode.S
+	ContextActionService:UnbindAction(ACTION_KEYS.D) -- Unbinds ACTION_KEYS.D from Keycode.D
 
-	ContextActionService:UnbindAction(ACTION_KEYS.SPACE)
-	ContextActionService:UnbindAction(ACTION_KEYS.LSHIFT)
+	ContextActionService:UnbindAction(ACTION_KEYS.SPACE) -- Unbinds ACTION_KEYS.SPACE from Keycode.Space
+	ContextActionService:UnbindAction(ACTION_KEYS.LSHIFT) -- Unbinds ACTION_KEYS.LSHIFT from Keycode.LeftShift
 end
 
-function FlightController:_init()
-	self:_bindActions()
-	self:_addMovers()
-	self:_updateAnimation()
+function FlightController:_init() -- Add a private method, that initializes the functionality of this current instance
+	self:_bindActions() -- Calls FlightController:_bindActions() to bind keys to movement directions
+	self:_addMovers() -- Calls FlightController:_addMovers() to create the necessary body movers
+	self:_updateAnimation() -- Calls FlightController:_updateAnimation() to update the animations
 
-	self._humanoid.PlatformStand = true -- Disable some humanoid functionality
-	RobloxControls:Disable() -- Disable roblox character movement
+	self._humanoid.PlatformStand = true -- Sets Humanoid.PlatformStand to true to disable some humanoid functionality
+	RobloxControls:Disable() -- Calls RobloxControls:Disable() to disable roblox character movement
 
-	local function on_destroy()
-		self:_unbindActions()
-		self:_stopAnimation()
+	local function on_destroy() -- Declares and initializes a function that calls after Maid:Destroy() to disable functionality and enable roblox optimizations
+		self:_unbindActions() -- Calls FlightController:_unbindActions() to unbind keys from movement directions
+		self:_stopAnimation() -- Calls FlightController:_stopAnimation() to cancel all running tracks
 
-		self._humanoid.PlatformStand = false
-		RobloxControls:Enable() -- Give movement control back to roblox
+		self._humanoid.PlatformStand = false -- Sets Humanoid.PlatformStand to false to enable humanoid functionality
+		RobloxControls:Enable() -- Calls RobloxControls:Enable() to give movement control back to roblox
 	end
 
-	self._Maid:GiveTask(self:_initFrameUpdate())
-	self._Maid:GiveTask(on_destroy)
+	self._Maid:GiveTask(self:_initFrameUpdate()) -- Tasks self._Maid to disconnect the RBXScriptConnection returned by FlightController:_initFrameUpdate(), when it is no longer needed
+	self._Maid:GiveTask(on_destroy) -- Tasks self._Maid to call on_destroy() after Maid:DoCleaning() or Maid:Destroy() gets called
 end
 
-function FlightController.new(speed, fly_animations)
-	local self = setmetatable({}, FlightController)
+function FlightController.new(speed, fly_animations) -- Add a constructor to FlightController, that creates properties and initializes functionality
+	local self = setmetatable({}, FlightController) -- Create the table which will be the object and link it to a metatable
 
-	self.Speed = speed
-	self.VectorDirection = get_vectordirection()
+	self.Speed = speed -- Initializes the property Speed and assigns the argument speed to it
+	self.VectorDirection = get_vectordirection() -- Initializes the property VectorDirection and assigns a Vector3 returned by get_vectordirection() to it
 
-	self._Maid = Maid.new()
+	self._Maid = Maid.new() -- Initializes the private property _Maid and assigns a new Maid object to it
 
-	self._character = LocalPlayer.Character
-	self._humanoid = LocalPlayer.Character.Humanoid
+	self._character = LocalPlayer.Character -- Initializes the private property _character and assigns a reference to the LocalPlayer's character to it
+	self._humanoid = LocalPlayer.Character.Humanoid -- Initializes the private property _humanoid and assigns a reference to the character's humanoid to it
 
-	self._tracks = get_tracks(self._humanoid.Animator, fly_animations)
+	self._tracks = get_tracks(self._humanoid.Animator, fly_animations) -- Initializes a private property _tracks and assigns a value returned by get_tracks() to it
 
-	self:_init()
+	self:_init() -- Calls self:_init() to initialize the functionality of this current instance
 
-	return self
+	return self -- Returns the instance to the caller
 end
 
-function FlightController:Destroy()
-	self._Maid:Destroy()
+function FlightController:Destroy() -- Add a deconstructor to FlightController, that disables all functionality
+	self._Maid:Destroy() -- Call Maid:Destroy() to clean all MaidTasks assigned
 end
 
 -- Demo
-local speed = 64
+local speed = 64 -- Speed used in the demo place
 local fly_animations = {
-	Forward = script.Animations.Front,
-	Backward = script.Animations.Back,
+	Forward = script.Animations.Front, -- A pair for the forward flight animation
+	Backward = script.Animations.Back, -- A pair for the backward flight animation
 
-	LeftStrafing = script.Animations.Left,
-	RightStrafing = script.Animations.Right,
+	LeftStrafing = script.Animations.Left, -- A pair for the left strafing flight animation
+	RightStrafing = script.Animations.Right, -- A pair for the right strafing flight animation
 
-	LeftDiagonalForward = script.Animations.LeftFront,
-	RightDiagonalForward = script.Animations.RightFront,
+	LeftDiagonalForward = script.Animations.LeftFront, -- A pair for the left diagonal forward flight animation
+	RightDiagonalForward = script.Animations.RightFront, -- A pair for the right diagonal forward flight animation
 
-	LeftDiagonalBackward = script.Animations.LeftBack,
-	RightDiagonalBackward = script.Animations.RightBack,
-}
+	LeftDiagonalBackward = script.Animations.LeftBack, -- A pair for the left diagonal backward flight animation
+	RightDiagonalBackward = script.Animations.RightBack, -- A pair for the right diagonal backward flight animation
+} -- Animations used in the demo place
 
-local curr_controller
-ContextActionService:BindAction("__test__", function(_, input_state: Enum.UserInputState)
-	local uis = Enum.UserInputState
+local curr_controller -- Declare a variable that stores the currently running FlightController instance
+ContextActionService:BindAction("__test__", function(_, input_state: Enum.UserInputState) -- Bind LMB to __test__
+	local uis = Enum.UserInputState -- Reference to Enum.UserInputState to remote boilerplate code
 
-	if input_state == uis.Begin then
-		if not curr_controller then
-			curr_controller = FlightController.new(speed, fly_animations)
+	if input_state == uis.Begin then -- If the player started holding the LMB
+		if not curr_controller then -- If there isn't a running FlightController currently
+			curr_controller = FlightController.new(speed, fly_animations) -- Build a new FlightController instance and assign it to curr_controller
 		end
-	elseif input_state == uis.End or input_state == uis.Cancel then
-		curr_controller:Destroy()
-		curr_controller = nil
+	elseif input_state == uis.End or input_state == uis.Cancel then -- If the player stopped holding the LMB or roblox stopped registering it
+		curr_controller:Destroy() -- Call FlightController:Destroy() to deconstruct the running FlightController instance
+		curr_controller = nil -- Assign nil to curr_controller
 	end
 end, false, Enum.UserInputType.MouseButton1)
